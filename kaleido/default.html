@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <title>kaleido</title>
+
+    <!-- WinJS 引用 -->
+    <link href="WinJS/css/ui-dark.css" rel="stylesheet" />
+    <script src="WinJS/js/base.js"></script>
+    <script src="WinJS/js/ui.js"></script>
+
+    <!-- jquery 引用 -->
+    <script src="/js/jquery-2.1.4.min.js"></script>
+
+    <!-- jquery 引用 -->
+    <script src="/js/underscore-min.js"></script>
+
+    <!-- bootstrap 引用 -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- kaleido -->
+    <link href="/css/default.css" rel="stylesheet" />
+    <script src="/js/default.js"></script>
+    <link href="/css/main.css" rel="stylesheet" />
+    <script src="/js/main.js"></script>
+</head>
+<body class="win-type-body">
+    <div id="add-monitor" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Monitor</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="add-monitor-form-name">Name:</label>
+                            <input type="text" class="form-control" id="add-monitor-form-name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="add-monitor-form-url">URL:</label>
+                            <input type="url" class="form-control" id="add-monitor-form-url" placeholder="http://" />
+                        </div>
+                        <div class="form-group">
+                            <label for="add-monitor-form-selector">Selector:</label>
+                            <input type="text" class="form-control" id="add-monitor-form-selector" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="add-monitor-submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="alerter"></div>
+    <button type="button" class="btn btn-primary btn-lg"
+            data-toggle="modal" data-target="#add-monitor">
+        Add a monitor
+    </button>
+    <div id="monitor-container" class="container">
+        
+    </div>
+</body>
+</html>

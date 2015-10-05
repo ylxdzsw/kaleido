@@ -1,0 +1,16 @@
+﻿[
+  {
+    "outputFile": "js/main.js",
+    "inputFile": "js/main.coffee",
+    "minify": {
+        "enabled": false
+    }
+  },
+  {
+    "outputFile": "css/main.css",
+    "inputFile": "css/main.less",
+    "minify": {
+        "enabled": false
+    }
+  }
+]
