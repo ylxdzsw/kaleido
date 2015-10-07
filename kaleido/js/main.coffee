@@ -28,10 +28,12 @@ addMonitor = (monitor) ->
 
 renderMonitor = (monitor) ->
     if monitor.rendered then return else monitor.rendered = on
+    style = monitor.style ? do generateRamdomStyle
     HTMLstr = """
         <div id="monitor-#{monitor.name}">#{monitor.lastSync?.result}</div>
     """
     $ HTMLstr
+        .css style
         .appendTo $ "#monitor-container"
 
 renderAllMonitors = () ->
@@ -63,13 +65,16 @@ syncAllMonitors = () ->
     null
 
 saveAllMonitors = (cb=_.noop) ->
-    MonitorsToSave = Monitors.map (monitor) ->
+    cloneMonitor = (monitor) ->
         name: monitor.name
         url: monitor.url
         selector: monitor.selector
-        lastSync:
-            time: monitor.lastSync?.time
-            result: monitor.lastSync?.result
+        lastSync: monitor.lastSync ? null
+        style: monitor.style ? null
+
+    MonitorsToSave = Monitors
+        .map cloneMonitor
+        .map compact
 
     Windows.Storage.ApplicationData.current.roamingFolder
         .createFileAsync "Monitors.json", Windows.Storage.CreationCollisionOption.replaceExisting
@@ -109,3 +114,15 @@ COLORS = ["AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige","Bisque
 
 getRandomColor = () ->
     _.sample COLORS
+
+generateRamdomStyle = () ->
+    backgroundColor: do getRandomColor
+    color: do getRandomColor
+
+
+compact = (x) ->
+    if _.isArray x
+        _.compact x
+    else
+        delete x[k] for k,v of x when not v?
+        x
