@@ -9,13 +9,23 @@ kaleido.init = () ->
             url: $('#add-monitor-form-url').val()
             selector: $('#add-monitor-form-selector').val()
 
+    loadAllMonitors () ->
+        do renderAllMonitors
+        do syncAllMonitors
+
+kaleido.activate = () ->
+    Monitors.forEach syncMonitor
+
+kaleido.save = (cb) ->
+    saveAllMonitors cb
+
 addMonitor = (monitor) ->
     Monitors.push monitor
     renderMonitor monitor
     syncMonitor monitor
-    do saveMonitors
+    do saveAllMonitors
     alertMessage "Monitor Added Successfully!", 'success'
-    
+
 renderMonitor = (monitor) ->
     if monitor.rendered then return else monitor.rendered = on
     HTMLstr = """
@@ -24,11 +34,17 @@ renderMonitor = (monitor) ->
     $ HTMLstr
         .appendTo $ "#monitor-container"
 
+renderAllMonitors = () ->
+    Monitors.forEach renderMonitor
+
 updateRenderedMonitor = (monitor) ->
     $ "#monitor-#{monitor.name}"
         .text monitor.lastSync?.result
 
-syncMonitor = (monitor, cb) ->
+updateAllRenderedMonitors = () ->
+    Monitors.forEach updateRenderedMonitor
+
+syncMonitor = (monitor, cb=_.noop) ->
     $.get monitor.url, (data, status, xhr) ->
         data = $ monitor.selector, data
         data = if monitor.process
@@ -40,9 +56,13 @@ syncMonitor = (monitor, cb) ->
             time: _.now()
             result: data
         updateRenderedMonitor monitor
-        cb?()
+        do cb
 
-saveMonitors = (cb=_.identity) ->
+syncAllMonitors = () ->
+    syncMonitor i for i in Monitors
+    null
+
+saveAllMonitors = (cb=_.noop) ->
     MonitorsToSave = Monitors.map (monitor) ->
         name: monitor.name
         url: monitor.url
@@ -52,14 +72,30 @@ saveMonitors = (cb=_.identity) ->
             result: monitor.lastSync?.result
 
     Windows.Storage.ApplicationData.current.roamingFolder
-        .createFileAsync "Monitors.json", Windows.Storage.CreationCollisionOption.replaceExistring
+        .createFileAsync "Monitors.json", Windows.Storage.CreationCollisionOption.replaceExisting
         .then (file) ->
             Windows.Storage.FileIO.writeTextAsync file, JSON.stringify MonitorsToSave
         .done cb
 
+loadAllMonitors = (cb=_.noop) ->
+    parseData = (data) ->
+        try
+            m = JSON.parse data
+            Monitors = m if _.isArray m
+        catch e
+            alertMessage "Load Data Failed", 'error'
+        do cb
+
+    Windows.Storage.ApplicationData.current.roamingFolder
+        .getFileAsync "Monitors.json"
+        .then (file) ->
+            Windows.Storage.FileIO.readTextAsync file
+        .done parseData, cb
+
 alertMessage = (msg, type="info") ->
+    throw new SyntaxError "unexpected alert message type" if type not in ['success','info','warning','danger']
     HTMLstr = """
-    <div id="alerter" class="alert alert-dismissible alert-#{type} fade" role="alert">
+    <div class="alert alert-dismissible alert-#{type} fade in out" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
         <span id="alerter-message">#{msg}</span>
     </div>
